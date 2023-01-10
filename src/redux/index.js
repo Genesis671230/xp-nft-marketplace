@@ -1,0 +1,1 @@
+export {default as nftDataReducer} from './NftDataSlice.ts'
