@@ -1,45 +1,82 @@
 import { NorthEast, Verified, VerifiedUser } from "@mui/icons-material";
-import React, { useEffect, useState } from "react";
+import { useWeb3Modal } from "@web3modal/react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import EtherIcon from "../../assets/ether.svg";
+import { useWallet } from "../../hooks/useWallet";
+
 const SingleNft = () => {
   const [singleNftData, setSingleNftData] = useState();
 
+  const { storeAddress } = useWallet();
   const { pathname } = useLocation();
   const tokenId = pathname.split("/")[2];
-  const nftData = useSelector((state) => state.NftDataSlice.value);
-  console.log(tokenId, nftData, "this is a token");
+  const nftData = useSelector((state) => state.NftData.value);
+  const accountData = useSelector((state) => state.accountData?.value);
 
   const getContractData = async () => {
-    const contract = await nftData;
-    const contractName = await contract.name();
-    const contractSymbol = await contract.symbol();
+    try {
+      const contract = await nftData;
 
-    const regex = /(?<=[a-z])(?=[A-Z0-9])/g;
-    const organizedName = contractName.toString().replace(regex, " ");
+      if (contract) {
+        const contractName = await contract?.name();
+        const contractSymbol = await contract?.symbol();
 
-    const getMetadata = async () => {
-      const tokenMetadata = await fetch(await contract.tokenURI(tokenId));
-      const ourObj = await tokenMetadata.json();
-      return ourObj;
-    };
+        const regex = /(?<=[a-z])(?=[A-Z0-9])/g;
+        const organizedName = contractName?.toString().replace(regex, " ");
 
-    const metaData = await getMetadata();
-    console.log(metaData);
-    const wrappedCollectionNftData = {
-      name: organizedName,
-      symbol: contractSymbol,
-      metaData: metaData,
-    };
-    console.log(wrappedCollectionNftData);
-    setSingleNftData(wrappedCollectionNftData);
+        const getMetadata = async () => {
+          const tokenMetadata = await fetch(await contract?.tokenURI(tokenId), {
+            cache: "no-cache",
+          });
+          const ourObj = await tokenMetadata?.json();
+          return ourObj;
+        };
+
+        const getTokenOwner = async () => {
+          const tokenFunction = await contract?.ownerOf(tokenId);
+          const owner = await fetch(tokenFunction);
+          const ownerAddress = owner?.url?.toString().slice(-42);
+          return ownerAddress;
+        };
+
+        const metaData = await getMetadata();
+        const tokenOwner = await getTokenOwner();
+        const obj = { ...metaData, tokenOwner: tokenOwner };
+
+        console.log(metaData);
+        const wrappedCollectionNftData = {
+          name: organizedName,
+          symbol: contractSymbol,
+          metaData: obj,
+        };
+        setSingleNftData(wrappedCollectionNftData);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   useEffect(() => {
     getContractData();
   }, []);
-  console.log(singleNftData && singleNftData);
 
+  const { isOpen, open, close } = useWeb3Modal();
+
+  console.log(accountData);
+  const buyNft = async () => {
+    try {
+      const contract = await nftData;
+
+      const buy = await contract.safeTransferFrom(
+        singleNftData?.metaData?.tokenOwner,
+        accountData?.address,
+        tokenId
+      );
+      console.log(buy);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="bg-[#0d0d0d] min-h-screen text-slate-50">
       <div className="flex flex-col md:flex-row gap-10 justify-center p-20">
@@ -70,7 +107,10 @@ const SingleNft = () => {
               <VerifiedUser className=" text-red-800 " />
             </span>
             <span className="font-semibold">
-              {nftData.address.slice(0, 6)}...{nftData.address.slice(-6)}
+              <div>
+                {singleNftData?.metaData.tokenOwner?.slice(0, 6)}...
+                {singleNftData?.metaData.tokenOwner?.slice(-6)}
+              </div>
             </span>
           </div>
           <div className="mt-10">
@@ -83,7 +123,10 @@ const SingleNft = () => {
             </span>{" "}
           </div>
           <div className="my-6 flex flex-wrap gap-5">
-            <span className="cursor-pointer bg-slate-200 mr-2 text-black rounded-[40px] md:px-16 px-12  md:py-6 py-4  md:text-[16px] whitespace-nowrap  font-semibold ">
+            <span
+              onClick={buyNft}
+              className="cursor-pointer bg-slate-200 mr-2 text-black rounded-[40px] md:px-16 px-12  md:py-6 py-4  md:text-[16px] whitespace-nowrap  font-semibold "
+            >
               {" "}
               Buy Now
             </span>{" "}

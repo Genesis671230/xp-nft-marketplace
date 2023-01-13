@@ -2,23 +2,25 @@ import React, { useMemo, useState } from "react";
 import { useAddress } from "@thirdweb-dev/react";
 import { useContract } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
-import abi from "../../erc721_abi/abi.json";
+import abi from "../../abis/abi.json";
 import CollectionCard from "../../components/CollectionCard/CollectionCard";
 import { useDispatch, useSelector } from "react-redux";
-import { setNftData } from "../../redux/NftDataSlice.ts";
+import { setNftData } from "../../redux/Slices/NftDataSlice.ts";
+import { setAccountAddress } from "../../redux/Slices/AccountSlice";
+import { ethereumClient } from "../..";
 const Home = () => {
   const [allContracts, setAllContracts] = useState();
 
   const [allNfts, setAllNfts] = useState([]);
   const address = useAddress();
-  const {
-    contract: contractThirdWeb,
-    isLoading,
-    error,
-  } = useContract("0x58A7a5Af70499daC14Bc70A0898Ac3CE992Ee3AD");
+  // const {
+  //   contract: contractThirdWeb,
+  //   isLoading,
+  //   error,
+  // } = useContract("0x58A7a5Af70499daC14Bc70A0898Ac3CE992Ee3AD")
 
-  const nftData = useSelector((state) => state.NftDataSlice.value);
-  const dispatch = useDispatch();
+  const nftData = useSelector((state) => state.NftData.value)
+  const dispatch = useDispatch()
   
   
   const getContractData = async () => {
@@ -37,14 +39,15 @@ const Home = () => {
     setAllContracts(contract);
     dispatch(setNftData(contract));
   };
-  const run = async () => {
-    const nfts = await contractThirdWeb?.getAll();
-    setAllNfts(nfts);
-  };
+  // const run = async () => {
+  //   const nfts = await contractThirdWeb?.getAll();
+  //   setAllNfts(nfts);
+  // };
 
   useMemo(() => {
     //  run()
     getContractData();
+    dispatch(setAccountAddress(ethereumClient.getAccount()?.address));
   }, []);
 
   return (

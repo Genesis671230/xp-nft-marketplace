@@ -1,11 +1,9 @@
-import { configureStore } from '@reduxjs/toolkit'
-import {nftDataReducer} from "./redux"
+import { configureStore } from "@reduxjs/toolkit";
+import { accountSlice, nftDataReducer } from "./redux";
 
 export const store = configureStore({
   reducer: {
-    NftDataSlice: nftDataReducer
-    ,
+    NftData: nftDataReducer,
+    AccountData: accountSlice,
   },
-})
-
-
+});

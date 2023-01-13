@@ -1,41 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setNftData } from "../../redux/NftDataSlice.ts";
+import { setNftData } from "../../redux/Slices/NftDataSlice.ts";
 import { Link } from "react-router-dom";
 
 const NftCollection = () => {
   const [collectionData, setCollectionData] = useState();
 
-  const nftData = useSelector((state) => state.NftDataSlice.value);
-
+  const nftData = useSelector((state) => state.NftData.value);
   const getContractData = async () => {
     const contract = await nftData;
     const contractName = await contract.name();
     const contractSymbol = await contract.symbol();
-
     const regex = /(?<=[a-z])(?=[A-Z0-9])/g;
     const organizedName = contractName.toString().replace(regex, " ");
 
     const getMetadata = async (token) => {
-      const tokenMetadata = await fetch(await contract.tokenURI(token));
+      const tokenMetadata = await fetch(await contract.tokenURI(token), {
+        cache: "no-cache",
+      });
+
       const ourObj = await tokenMetadata.json();
       return ourObj;
+    };
+    const getTokenOwner = async (token) => {
+      const tokenFunction = await contract.ownerOf(token);
+      const owner = await fetch(tokenFunction);
+      const ownerAddress = owner.url.toString().slice(-42);
+      return ownerAddress;
     };
     let tokens = [];
     for (const item of [0, 1, 2, 3, 4]) {
       const metaData = await getMetadata(item);
-      tokens.push(metaData);
+      const tokenOwner = await getTokenOwner(item);
+      const obj = { ...metaData, tokenOwner:tokenOwner };
+      tokens.push(obj);
     }
     const wrappedCollectionNftData = {
       name: organizedName,
       symbol: contractSymbol,
       allTokens: tokens,
     };
+    console.log(wrappedCollectionNftData);
     setCollectionData(wrappedCollectionNftData);
   };
   useEffect(() => {
     getContractData();
   }, []);
+  console.log(nftData);
+
   return (
     <div className="bg-[#0d0d0d] ">
       {collectionData?.allTokens?.length > 0 && (
@@ -61,6 +73,7 @@ const NftCollection = () => {
                     <div>{token?.name}</div>
                     <div>{token?.description}</div>
                     <div>{token?.type}</div>
+                    <div>{token?.tokenOwner.slice(0,6)}...{token?.tokenOwner.slice(-6)}</div>
                   </div>
                   <div className="px-4 py-2 text-slate-50 bg-purple-700 font-bold   rounded-lg  w-fit ">
                     Buy Now
