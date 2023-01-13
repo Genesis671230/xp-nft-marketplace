@@ -23,7 +23,6 @@ const CollectionCard = ({ contractData }) => {
     );
     const contractMetadataJson = await contractMetadata.json();
 
-
     console.log(contractMetadataJson);
     setCollectionData({
       ...collectionData,
@@ -37,21 +36,22 @@ const CollectionCard = ({ contractData }) => {
     getContractData();
   }, []);
 
-
   return (
     <div>
       {collectionData && (
-        <Link to="/nftCollection" state={{collectionData}}>
+        <Link to="/nftCollection" state={{ collectionData }}>
           <div>
-            <div className=" w-[18rem] h-[18rem]">
+            <div className="mt-10 w-[15rem] h-[15rem]">
               <img
-                className=" object-contain"
+                className="rounded-t-lg object-contain"
                 src={collectionData?.baseImage}
                 alt=""
               />
             </div>
-            <div> {collectionData?.name}</div>
-            <div> {collectionData?.symbol}</div>
+            <div className="font-sans text-slate-200 bg-slate-800 rounded-b-lg overflow-ellipsis w-[15rem] h-[5rem] flex flex-col justify-between gap-2 p-4">
+              <div className="font-semibold"> {collectionData?.name}</div>
+              <div> {collectionData?.symbol}</div>
+            </div>
           </div>
         </Link>
       )}
