@@ -1,2 +1,2 @@
-export {default as nftDataReducer} from './Slices/NftDataSlice.ts'
-export {default as accountSlice} from './Slices/AccountSlice.ts'
+export {default as nftDataReducer} from './Reducers/NftDataSlice'
+export {default as accountSlice} from './Reducers/AccountSlice'

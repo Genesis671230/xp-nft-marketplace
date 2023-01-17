@@ -5,6 +5,7 @@ import { useListing } from "../../hooks/useListing";
 import {
   ConnectWallet,
   useActiveListings,
+  useAddress,
   useContract,
   useMarketplace,
   useNetwork,
@@ -15,7 +16,8 @@ import {
   NATIVE_TOKENS,
   NATIVE_TOKEN_ADDRESS,
 } from "@thirdweb-dev/sdk";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import ListingHero from "../../components/ListingHero/ListingHero";
 
 const Listings = () => {
   const [allListings, setAllListings] = useState();
@@ -31,10 +33,13 @@ const Listings = () => {
     "marketplace"
   );
 
+  const address = useAddress();
+
   useMemo(async () => {
     const allActiveListings =
       await marketplaceContract?.contract?.getActiveListings();
-
+      
+      
     const activeListings = [];
     for (const listing of allActiveListings) {
       const offers = await marketplaceContract?.contract?.getOffers(listing.id);
@@ -61,141 +66,7 @@ const Listings = () => {
 
   const navigate = useNavigate();
 
-  // const getListings = async () => {
-  //   try {
-  //     const provider = new ethers.providers.JsonRpcProvider(
-  //       "https://rpc-mumbai.maticvigil.com/"
-  //     );
-  //     const contract = new ethers.Contract(
-  //       "0x42182Ebad491D869dAafe47Fc6464F2089f8BB5a",
-  //       marketplaceAbi,
-  //       provider
-  //     );
-  //     const validParams = [
-  //       "listingId",
-  //       "tokenOwner",
-  //       "assetContract",
-  //       "tokenId",
-  //       "startTime",
-  //       "endTime",
-  //       "quantity",
-  //       "currency",
-  //       "reservePricePerToken",
-  //       "buyoutPricePerToken",
-  //       "tokenType",
-  //       "listingTyp",
-  //     ];
-  //     const allActiveListings =
-  //       await marketplaceContract?.contract?.getActiveListings();
-
-  //     const activeListingsWithOffers = allActiveListings.map(async (item) => {
-  //       const offers = await marketplaceContract.contract.getOffers(item.id);
-  //       console.log(offers);
-
-  //       return { ...item, offers: offers };
-  //     });
-  //     setAllListings(activeListingsWithOffers);
-
-  //     // const totalListingsBigNumber = await contract?.totalListings();
-  //     // const totalListings = Number(totalListingsBigNumber)
-  //     // console.log(allActiveListings);
-
-  //     // const allListingsArray = [];
-
-  //     // for (let i = 1; i <= allActiveListings?.length; i++) {
-  //     //   const listings = await contract?.listings(i);
-  //     //   const organizedData = Object.entries(listings)
-  //     //     .filter((item) => validParams.includes(item[0]))
-  //     //     .reduce((acc, item) => {
-  //     //       if (item[0] === "startTime") {
-  //     //         const startTime = Number(item[1]);
-  //     //         const newData = new Date(startTime).getTime();
-  //     //         acc[item[0]] = newData;
-  //     //         return acc;
-  //     //       }
-  //     //       if (item[0] === "endTime") {
-  //     //         const endTime = Number(item[1]);
-  //     //         const newData = new Date(endTime).getTime();
-  //     //         acc[item[0]] = newData;
-  //     //         return acc;
-  //     //       }
-  //     //       if (item[0] === "listingId") {
-  //     //         const listingId = Number(item[1]);
-
-  //     //         acc[item[0]] = listingId;
-  //     //         return acc;
-  //     //       }
-  //     //       if (item[0] === "quantity") {
-  //     //         const quantity = Number(item[1]);
-
-  //     //         acc[item[0]] = quantity;
-  //     //         return acc;
-  //     //       }
-  //     //       if (item[0] === "reservePricePerToken") {
-  //     //         const ether = ethers.utils.formatEther(item[1]);
-
-  //     //         acc[item[0]] = ether;
-  //     //         return acc;
-  //     //       }
-  //     //       if (item[0] === "buyoutPricePerToken") {
-  //     //         const ether = ethers.utils.formatEther(item[1]);
-
-  //     //         acc[item[0]] = ether;
-  //     //         return acc;
-  //     //       }
-  //     //       if (item[0] === "tokenId") {
-  //     //         const tokenId = Number(item[1]);
-
-  //     //         acc[item[0]] = tokenId;
-  //     //         return acc;
-  //     //       }
-  //     //       if (item[0] === "reservePricePerToken") {
-  //     //         const ether = (item[1] / 10) * 18;
-
-  //     //         acc[item[0]] = ether;
-  //     //         return acc;
-  //     //       }
-
-  //     //       acc[item[0]] = item[1];
-  //     //       return acc;
-  //     //     }, {});
-
-  //     //   const singleNftMetadata = await fetchTokenData(organizedData?.tokenId);
-  //     //   console.log(singleNftMetadata,allListingsArray);
-  //     //   allListingsArray.push({
-  //     //     ...organizedData,
-  //     //     nftMetadata: singleNftMetadata,
-  //     //   });
-  //     // }
-  //     // setAllListings(allListingsArray);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const createDirectListing = async (contractAddress, tokenId, price) => {
-    // const provider = new ethers.providers.JsonRpcProvider(
-    //   "https://rpc-mumbai.maticvigil.com"
-    // );
-    // const signer = provider.getSigner();
-    // const contractMarketplace = new ethers.Contract(
-    //   "0x42182Ebad491D869dAafe47Fc6464F2089f8BB5a",
-    //   marketplaceAbi,
-    //   signer
-    // );
-
-    // const ListingParameters = {
-    //   assetContract: "0x42182Ebad491D869dAafe47Fc6464F2089f8BB5a",
-    //   tokenId: "0",
-    //   startTime: new Date(),
-    //   secondsUntilEndTime: 60 * 60 * 24 * 7,
-    //   quantityToLis: 1,
-    //   currencyToAccept: NATIVE_TOKEN_ADDRESS,
-    //   reservePricePerToken: 1,
-    //   buyoutPricePerToken: "0",
-    //   listingType: 0,
-    // };
-
     const listing = {
       assetContractAddress: contractAddress,
       tokenId: tokenId,
@@ -224,31 +95,7 @@ const Listings = () => {
     }
   };
   const createAuctionListing = async (contractAddress, tokenId, price) => {
-    // const provider = new ethers.providers.JsonRpcProvider(
-    //   "https://polygon-rpc.com"
-    // );
-    // const signer = provider.getSigner();
-    // const contractMarketplace = new ethers.Contract(
-    //   "0x42182Ebad491D869dAafe47Fc6464F2089f8BB5a",
-    //   marketplaceAbi,
-    //   signer
-    // );
-
     try {
-      //   const transaction = await marketplace.createListing({
-      //     assetContractAddress: contractAddress, // Contract Address of the NFT
-      //     buyoutPricePerToken: price, // Maximum price, the auction will end immediately if a user pays this price.
-      //     currencyContractAddress: NATIVE_TOKEN_ADDRESS, // NATIVE_TOKEN_ADDRESS is the crpyto curency that is native to the network. i.e. Goerli ETH.
-      //     listingDurationInSeconds: 60 * 60 * 24 * 7, // When the auction will be closed and no longer accept bids (1 Week)
-      //     quantity: 1, // How many of the NFTs are being listed (useful for ERC 1155 tokens)
-      //     reservePricePerToken: 0, // Minimum price, users cannot bid below this amount
-      //     startTimestamp: new Date(), // When the listing will start
-      //     tokenId: tokenId, // Token ID of the NFT.
-      //   });
-      //   console.log(transaction);
-
-      //   return transaction;
-
       const auction = {
         assetContractAddress: contractAddress,
         tokenId: tokenId,
@@ -315,13 +162,7 @@ const Listings = () => {
 
   const buyNft = async (listingId) => {
     if (marketplaceContract) {
-      // Quantity of the asset you want to buy
-      const quantityDesired = 1;
-      console.log(await marketplaceContract);
-      await marketplaceContract?.contract?.buyoutListing(
-        listingId,
-        quantityDesired
-      );
+      await marketplaceContract?.contract?.buyoutListing(listingId, 1);
     }
   };
 
@@ -336,171 +177,86 @@ const Listings = () => {
     );
   };
   const placeBid = async (listingId) => {
-    await marketplaceContract?.contract?.auction?.makeBid(listingId, offerPrice);
+    await marketplaceContract?.contract?.auction?.makeBid(
+      listingId,
+      offerPrice
+    );
   };
+  const organizedUri = (uri) => {
+    const formattedUri = uri.startsWith("ipfs://")
+      ? uri.replace("ipfs://", "https://ipfs.io/ipfs/")
+      : uri;
+    return formattedUri;
+  };
+
   return (
     <>
-      <div className="bg-gray-100 ">
-        <section class="bg-gray-100">
-          <div class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 gap-x-16 gap-y-8 lg:grid-cols-5">
-              <div class="lg:col-span-2 lg:py-12">
-                <p class="max-w-xl text-lg">
-                  To Create nft listing, use token collection contract with its
-                  token id, mention the type of listing you want and also sale
-                  price
-                </p>
-              </div>
+      <div className="bg-gray-100  ">
+        <ListingHero />
+        {/* <section className="bg-gray-900 text-white">
+  <div
+    className="mx-auto max-w-screen-xl px-4 py-32 lg:flex lg:h-screen lg:items-center"
+  >
+    <div className="mx-auto max-w-3xl text-center">
+      <h1
+        className="bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl"
+      >
+       Unlock the Value of Digital Collectibles
 
-              <div class="rounded-lg bg-white p-8 shadow-lg lg:col-span-3 lg:p-12">
-                <form
-                  action=""
-                  class="space-y-4"
-                  onSubmit={(e) => handleCreateListing(e)}
-                >
-                  <div>
-                    <label class="sr-only" for="name">
-                      Listing Type
-                    </label>
-                  </div>
+        <span className="sm:block">  </span>
+      </h1>
 
-                  <div class="grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
-                    <div className="hidden">
-                      <input
-                        type="radio"
-                        name="listingType"
-                        id="directListing"
-                        value="directListing"
-                        defaultChecked
-                      />
-                      <input
-                        type="radio"
-                        name="listingType"
-                        id="auctionListing"
-                        value="auctionListing"
-                      />
-                    </div>
-                    <div onClick={() => setSelectedListing(0)}>
-                      <label
-                        for="directListing"
-                        class={`block w-full rounded-lg cursor-pointer  outline-none border-[1px] ${
-                          selectedListing === 0
-                            ? "border-purple-600"
-                            : "border-gray-200"
-                        } p-3`}
-                        tabindex="0"
-                      >
-                        <span class="text-sm font-medium">Direct Listing </span>
-                      </label>
-                    </div>
+      <p className="mx-auto mt-4 max-w-xl sm:text-xl sm:leading-relaxed">
+      Unlock the Future of Collectibles: Discover the World of NFTs on Our Marketplace
+      </p>
 
-                    <div onClick={() => setSelectedListing(1)}>
-                      <label
-                        for="auctionListing"
-                        class={`block w-full  rounded-lg  outline-none border-[1px] ${
-                          selectedListing === 1
-                            ? "border-purple-600"
-                            : "border-gray-200"
-                        } p-3`}
-                        tabindex="0"
-                      >
-                        <span class="text-sm font-medium">Auction</span>
-                      </label>
-                    </div>
-                  </div>
+      <div className="mt-8 flex flex-wrap justify-center gap-4">
+        <a
+          className="block w-full rounded border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-white focus:outline-none focus:ring active:text-opacity-75 sm:w-auto"
+          href="/get-started"
+        >
+          Get Started
+        </a>
 
-                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                      <label class="sr-only" for="email">
-                        NFT Contract Address
-                      </label>
-                      <input
-                        class="w-full rounded-lg border-gray-300 outline-none border-[1px] p-3 text-sm"
-                        placeholder="NFT Contract Address"
-                        type="text"
-                        id="contractAddress"
-                        name="contractAddress"
-                      />
-                    </div>
-
-                    <div>
-                      <label class="sr-only" for="phone">
-                        Token ID
-                      </label>
-                      <input
-                        class="w-full rounded-lg border-gray-300 outline-none border-[1px] p-3 text-sm"
-                        placeholder="NFT Token Id"
-                        type="text"
-                        id="tokenId"
-                        name="tokenId"
-                      />
-                    </div>
-                  </div>
-                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                      <label class="sr-only" for="email">
-                        Sale Price
-                      </label>
-                      <input
-                        class="w-full rounded-lg border-gray-300 outline-none border-[1px] p-3 text-sm"
-                        placeholder="Sale Price"
-                        type="text"
-                        id="salePrice"
-                        name="price"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="mt-4">
-                    <button
-                      type="submit"
-                      class="inline-flex w-full items-center justify-center rounded-lg bg-black px-5 py-3 text-white sm:w-auto"
-                    >
-                      <span class="font-medium"> Create Listing </span>
-
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="ml-3 h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
+        <a
+          className="block w-full rounded border border-blue-600 px-12 py-3 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring active:bg-blue-500 sm:w-auto"
+          href="/about"
+        >
+          Learn More
+        </a>
+      </div>
+      </div>
+      </div>
+    </section> */}
       </div>
 
       <div className="p-10">
         <div className="text-[3rem]">All Listings</div>
         <div className="flex flex-wrap gap-10 mt-4">
           {allListings?.map((listing, index) => (
-            <div className="card w-96 bg-base-100 shadow-xl">
-              <figure className="overflow-hidden">
-                <img
-                  className="object-cover h-[20rem] w-[24rem]"
-                  src={listing?.asset?.image}
-                  alt="Shoes"
-                />
-              </figure>
+            <div className="card cursor-pointer w-96 bg-base-100 shadow-xl">
+              <Link
+                to={`/buyListing/${listing.id}`}
+                state={{ listingData: listing }}
+              >
+                <figure className="overflow-hidden">
+                  <img
+                    className="object-cover h-[20rem] w-[24rem]"
+                    src={
+                      listing?.asset?.image || organizedUri(listing?.asset?.uri)
+                    }
+                    alt="Shoes"
+                  />
+                </figure>
+              </Link>
               <div className="p-4 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between py-2">
-                    <div>
+                    {/* <div>
                       <h2 className="text-xl font-bold">
-                        <span>{listing?.asset?.name}</span>
+                      <span>{listing?.asset?.name}</span>
                       </h2>
-                    </div>
+                    </div> */}
                     <div className="flex justify-between flex-col">
                       <div>
                         <h2 className="text-xl font-bold">
@@ -515,9 +271,9 @@ const Listings = () => {
                       </div>
                     </div>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="font-mono">{listing?.asset?.description}</p>
-                  </div>
+                  </div> */}
                   <div className="card-actions justify-end">
                     <div className="badge badge-outline">
                       {listing?.nftMetadata?.name}
@@ -529,59 +285,99 @@ const Listings = () => {
                       {listing?.sellerAddress?.slice(-6)}
                     </div>
                   </div>
-
+                  {/* 
                   <div>
-                    <div className="text-slate-600 text-[2rem] font-semibold  ">
-                      All Offers
-                    </div>
-                    <div>
-                      {listing?.offers.map((offer) => (
-                        <div>
-                          <div>
-                            {" "}
-                            {offer?.buyerAddress?.slice(0, 6)}...
-                            {offer?.buyerAddress?.slice(-6)}
-                          </div>
-                          <div>{Number(offer?.quantityDesired)}</div>
-                          <div>
-                            {BigNumber.from(offer?.pricePerToken).toString()}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="text-slate-600 text-[2rem] font-semibold  ">
+                  All Offers
                   </div>
+                  <div>
+                  {listing?.offers.map((offer) => (
+                    <div>
+                    <div>
+                    {" "}
+                    {offer?.buyerAddress?.slice(0, 6)}...
+                    {offer?.buyerAddress?.slice(-6)}
+                    </div>
+                    <div>{Number(offer?.quantityDesired)}</div>
+                    <div>
+                    {BigNumber.from(offer?.pricePerToken).toString()}
+                    </div>
+                    </div>
+                    ))}
+                    </div>
+                      </div> */}
 
-                  {listing.type === 0 && (
+                      
+
+                  {listing.type === 0 && listing.sellerAddress !==address && (
                     <div
                       className="flex justify-end "
-                      onClick={() => buyNft(index + 1)}
+                      onClick={() => buyNft(listing?.id)}
                     >
-                      <button className="px-4 py-2 bg-sky-600 font-bold rounded-lg shadow-lg text-white  ">
+                      {/* <button className="px-4 py-2 bg-sky-600 font-bold rounded-lg shadow-lg text-white  ">
                         Buy Now
-                      </button>
+                      </button> */}
+                      <div
+                        className="group [transform:translateZ(0)] px-6 py-3 rounded-lg overflow-hidden bg-gray-200 relative before:absolute before:bg-sky-600 before:top-1/2 before:left-1/2 before:h-8 before:w-8 before:-translate-y-1/2 before:-translate-x-1/2 before:rounded-full before:scale-[0] 
+                      before:bg-gradient-to-r from-pink-600 to-purple-800  before:blur  group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt hover:text-black
+                      before:opacity-0 hover:before:scale-[6] hover:before:opacity-100 before:transition before:ease-in-out before:duration-500"
+                      >
+                        <span className="relative z-0 text-black group-hover:text-gray-200 transition ease-in-out duration-500">
+                          Buy now
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {listing?.type === 1 &&listing.sellerAddress !== address&& (
+                    <div className="flex relative  justify-end items-center ">
+                      {/* <button className="px-4 py-2 bg-sky-600 font-bold rounded-lg shadow-lg text-white  ">
+                        Buy Now
+                      </button> */}
+                      <div
+                        className="group [transform:translateZ(0)] px-6 py-3 rounded-lg overflow-hidden bg-gray-200 relative before:absolute before:bg-sky-600 before:top-1/2 before:left-1/2 before:h-8 before:w-8 before:-translate-y-1/2 before:-translate-x-1/2 before:rounded-full before:scale-[0] 
+                      before:bg-gradient-to-r from-pink-600 to-purple-800  before:blur  group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt hover:text-black
+                      before:opacity-0 hover:before:scale-[6] hover:before:opacity-100 before:transition before:ease-in-out before:duration-500"
+                      >
+                        <span className="animate-pulse relative z-0 text-black group-hover:text-gray-200 transition ease-in-out duration-500">
+                          {new Date(
+                            BigNumber?.from(
+                              listing?.endTimeInEpochSeconds
+                            )?.toNumber() * 1000
+                          ).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="absolute bg-purple-700 text-white rounded-sm text-[12px] px-2 right-2 -top-6 animate-pulse z-10">
+                        Ends in
+                      </div>
                     </div>
                   )}
                 </div>
                 <div className="flex justify-end flex-col">
-                  <div className="mt-4">
+                  {/* <div className="mt-4">
                     <input
-                      onChange={(e) => setOfferPrice(e.target.value)}
-                      type="text"
-                      className="outline-none rounded-sm border-[1px] border-slate-300 w-full"
+                    onChange={(e) => setOfferPrice(e.target.value)}
+                    type="text"
+                    className="outline-none rounded-sm border-[1px] border-slate-300 w-full"
                     />
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (listing.type === 0) {
-                        makeOffer(listing?.id);
-                      } else {
-                        placeBid(listing?.id);
-                      }
-                    }}
-                    className="px-4 py-2 bg-slate-800 mt-4 rounded-lg shadow-lg font-bold text-white  "
+                  </div> */}
+                  <Link
+                    className=" outline-none"
+                    to={`/buyListing/${listing?.id}`}
+                    state={{ listingData: listing }}
                   >
-                    {listing.type === 0 ? "Make an offer" : "Place a Bid"}
-                  </button>
+                    <button
+                      // onClick={() => {
+                      //   if (listing.type === 0) {
+                      //     makeOffer(listing?.id);
+                      //   } else {
+                      //     placeBid(listing?.id);
+                      //   }
+                      // }}
+                      className="px-4 w-full py-2 bg-slate-800 mt-4 rounded-lg shadow-lg font-bold text-white  "
+                    >
+                      {listing?.type === 0 ? "Make an offer" : "Place a Bid"}
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>

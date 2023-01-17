@@ -10,7 +10,7 @@ import { Provider } from "react-redux";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { arbitrum, mainnet, polygon } from "wagmi/chains";
 import App from "./App";
-import Navbar from "./components/Navbar/Navbar.tsx";
+import Navbar, { Nav } from "./components/Navbar/Navbar.tsx";
 import "./index.css";
 import { store } from "./store.ts";
 import { bsc } from "wagmi/chains";
@@ -42,7 +42,7 @@ root.render(
             projectId="037fed513c7859a3d4b02e0e9fe85777"
             ethereumClient={ethereumClient}
           />
-          <Navbar />
+          <Nav />
           <App />
         </WagmiConfig>
       </Provider>

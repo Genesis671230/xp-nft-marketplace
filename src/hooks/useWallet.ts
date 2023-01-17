@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// @ts-ignore
 import { ethereumClient } from "../index.js";
-//@ts-ignore
-import { setAccountAddress } from "../redux/Slices/AccountSlice";
+import { setAccountAddress } from "../redux/Reducers/AccountSlice";
+
 export const useWallet = () => {
   const account = useSelector((store: any) => store.AccountData.value);
   const dispatch = useDispatch();
